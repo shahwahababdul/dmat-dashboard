@@ -35,6 +35,23 @@ try:
     import plotly.express as px
     st.success("✅ Successfully imported plotly")
     st.info(f"plotly version: {px.__version__}")
+    
+    # Test st.plotly_chart functionality
+    st.subheader("Testing st.plotly_chart functionality")
+    try:
+        # Create a simple plotly figure
+        df = pd.DataFrame({
+            'x': [1, 2, 3, 4, 5],
+            'y': [10, 11, 12, 13, 14]
+        })
+        fig = px.line(df, x='x', y='y', title="Test Plotly Chart")
+        
+        # Display the figure using st.plotly_chart
+        st.plotly_chart(fig)
+        st.success("✅ Successfully used st.plotly_chart")
+    except Exception as e:
+        st.error(f"❌ Failed to use st.plotly_chart: {e}")
+        
 except ImportError as e:
     st.error(f"❌ Failed to import plotly: {e}")
 
