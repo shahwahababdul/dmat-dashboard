@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 
 # Page configuration
 st.set_page_config(layout="wide", page_title="Google Sheet Test")
@@ -39,15 +39,29 @@ try:
         
         if numeric_cols:
             # If there are numeric columns, create a bar chart of one of them
-            fig = px.bar(df, x=df.columns[0], y=numeric_cols[0], title=f"{numeric_cols[0]} by {df.columns[0]}")
-            st.plotly_chart(fig, use_container_width=True)
+            fig, ax = plt.subplots(figsize=(10, 6))
+            if len(df) < 20:  # Only show all bars if we have a reasonable number
+                ax.bar(df[df.columns[0]].astype(str), df[numeric_cols[0]])
+            else:
+                # If too many rows, show top 10
+                top_values = df.nlargest(10, numeric_cols[0])
+                ax.bar(top_values[df.columns[0]].astype(str), top_values[numeric_cols[0]])
+                plt.title(f"Top 10 {numeric_cols[0]} by {df.columns[0]}")
+            
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+            st.pyplot(fig)
         else:
             # If no numeric columns, show counts of unique values in the first column
             col_name = df.columns[0]
-            counts = df[col_name].value_counts().reset_index()
-            counts.columns = [col_name, "Count"]
-            fig = px.bar(counts, x=col_name, y="Count", title=f"Counts of {col_name}")
-            st.plotly_chart(fig, use_container_width=True)
+            counts = df[col_name].value_counts().head(10)
+            
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.bar(counts.index.astype(str), counts.values)
+            plt.title(f"Counts of {col_name} (Top 10)")
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+            st.pyplot(fig)
 
 except Exception as e:
     st.error(f"Error accessing the Google Sheet: {e}")
