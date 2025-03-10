@@ -11,6 +11,17 @@ import PIL.Image
 from plotly.io import write_image
 import numpy as np
 
+# Add debugging information here
+import sys
+st.write(f"Python version: {sys.version}")
+st.write(f"Installed packages:")
+try:
+    import pkg_resources
+    installed_packages = [f"{pkg.key}=={pkg.version}" for pkg in pkg_resources.working_set]
+    st.write(installed_packages)
+except Exception as e:
+    st.write(f"Error listing packages: {e}")
+
 # Page configuration
 st.set_page_config(layout="wide")  # Enable full page width layout
 
