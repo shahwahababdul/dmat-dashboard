@@ -97,12 +97,12 @@ try:
     service_account_info = st.secrets["gcp_service_account"]
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(service_account_info, scopes=scope)
-except Exception:
-    # Fall back to local credentials file (for local development)
-    json_key_file = "creds.json"
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_file("creds.json", scopes=scope)
     client = gspread.authorize(creds)
+except Exception as e:
+    # Display error about credentials
+    st.error(f"Failed to access Google credentials: {e}")
+    st.info("Please make sure you have set up your Google credentials in Streamlit secrets.")
+    st.stop()  # Stop execution if credentials fail
 
     # Google Sheet details
     spreadsheet_id = "11FoqJicHt3BGpzAmBnLi1FQFN-oeTxR_WGKszARDcR4"
