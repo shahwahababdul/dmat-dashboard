@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Page configuration
 st.set_page_config(layout="wide", page_title="Google Sheet Test")
@@ -30,38 +29,36 @@ try:
     st.subheader("Column Information")
     st.write(f"Columns found: {', '.join(df.columns)}")
     
-    # Create a simple visualization if there's data
-    if len(df) > 0:
-        st.subheader("Sample Visualization")
+    # Use Streamlit's built-in visualization capabilities
+    st.subheader("Data Visualization")
+    
+    # Check if there are numeric columns
+    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    
+    if numeric_cols:
+        # Display a bar chart using Streamlit's built-in chart function
+        st.subheader(f"Bar Chart of {numeric_cols[0]}")
+        st.bar_chart(df[numeric_cols[0]])
         
-        # Check if there are numeric columns
-        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-        
-        if numeric_cols:
-            # If there are numeric columns, create a bar chart of one of them
-            fig, ax = plt.subplots(figsize=(10, 6))
-            if len(df) < 20:  # Only show all bars if we have a reasonable number
-                ax.bar(df[df.columns[0]].astype(str), df[numeric_cols[0]])
-            else:
-                # If too many rows, show top 10
-                top_values = df.nlargest(10, numeric_cols[0])
-                ax.bar(top_values[df.columns[0]].astype(str), top_values[numeric_cols[0]])
-                plt.title(f"Top 10 {numeric_cols[0]} by {df.columns[0]}")
-            
-            plt.xticks(rotation=45, ha='right')
-            plt.tight_layout()
-            st.pyplot(fig)
-        else:
-            # If no numeric columns, show counts of unique values in the first column
-            col_name = df.columns[0]
-            counts = df[col_name].value_counts().head(10)
-            
-            fig, ax = plt.subplots(figsize=(10, 6))
-            ax.bar(counts.index.astype(str), counts.values)
-            plt.title(f"Counts of {col_name} (Top 10)")
-            plt.xticks(rotation=45, ha='right')
-            plt.tight_layout()
-            st.pyplot(fig)
+        # If we have multiple numeric columns, show a line chart too
+        if len(numeric_cols) > 1:
+            st.subheader(f"Line Chart Comparing Numeric Values")
+            chart_data = df[numeric_cols].head(20)  # Limit to first 20 rows for visibility
+            st.line_chart(chart_data)
+    
+    # Display statistics
+    st.subheader("Data Statistics")
+    if numeric_cols:
+        st.write(df[numeric_cols].describe())
+    
+    # Show unique values for categorical columns
+    cat_cols = [col for col in df.columns if col not in numeric_cols]
+    if cat_cols:
+        st.subheader("Categorical Columns Summary")
+        for col in cat_cols[:3]:  # Limit to first 3 categorical columns
+            st.write(f"Unique values in {col}:")
+            value_counts = df[col].value_counts().head(10)  # Show top 10 values
+            st.write(value_counts)
 
 except Exception as e:
     st.error(f"Error accessing the Google Sheet: {e}")
