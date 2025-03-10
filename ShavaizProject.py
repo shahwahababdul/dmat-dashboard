@@ -1,5 +1,4 @@
 import streamlit as st
-import gspread
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -10,6 +9,12 @@ from google.oauth2.service_account import Credentials
 import PIL.Image
 from plotly.io import write_image
 import numpy as np
+try:
+    import gspread
+    st.write("Successfully imported gspread")
+except ImportError:
+    st.error("Failed to import gspread")
+
 
 # Add debugging information here
 import sys
