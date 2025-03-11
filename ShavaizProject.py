@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+import matplotlib.pyplot as plt
 from io import BytesIO
 from matplotlib.backends.backend_pdf import PdfPages
 import datetime
